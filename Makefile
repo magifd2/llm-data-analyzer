@@ -14,6 +14,11 @@ build:
 	@mkdir -p ./bin
 	@go build -o $(DEV_BINARY_PATH) .
 
+# Run the unit tests
+test:
+	@echo "Running unit tests..."
+	@go test -v ./...
+
 # Build the release packages
 release:
 	@echo "Building release packages for version $(VERSION)..."
@@ -29,4 +34,4 @@ clean:
 	@echo "Cleaning up..."
 	@rm -rf ./bin ./release
 
-.PHONY: all build release clean
+.PHONY: all build release clean test

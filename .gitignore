@@ -1,0 +1,12 @@
+# Binaries
+/bin
+/release
+llm-data-analyzer
+mock_server
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
