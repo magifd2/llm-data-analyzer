@@ -23,13 +23,14 @@ This tool is useful for tasks such as:
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/llm-data-analyzer.git
+    git clone git@github.com:magifd2/llm-data-analyzer.git
     cd llm-data-analyzer
     ```
 2.  Build the application:
     ```bash
-    go build -o llm-data-analyzer .
+    make build
     ```
+    The binary will be available at `./bin/llm-data-analyzer`.
 
 ## Configuration
 
@@ -61,8 +62,11 @@ endpoints:
 ## Usage
 
 ```bash
-./llm-data-analyzer [flags] <input_file_path>
+./bin/llm-data-analyzer [flags] <input_file_path>
 ```
+
+**Commands:**
+- `version`: Print the version number.
 
 **Flags:**
 
@@ -96,7 +100,7 @@ endpoints:
 4.  **Run the tool:**
     ```bash
     export OPENAI_API_KEY="your-api-key"
-    ./llm-data-analyzer -e openai --analysis-prompt-file analysis.txt --summary-prompt-file summary.txt input.txt
+    ./bin/llm-data-analyzer -e openai --analysis-prompt-file analysis.txt --summary-prompt-file summary.txt input.txt
     ```
 
 ## Development
@@ -106,11 +110,25 @@ This project is developed using Go and the Cobra CLI framework.
 ### Building from source
 
 ```bash
-go build -o llm-data-analyzer .
+make build
 ```
 
 ### Running tests
 
 ```bash
-go test ./...
+make test
 ```
+
+### Creating a release
+
+```bash
+make release
+```
+This will create release archives for macOS, Windows, and Linux in the `./release` directory.
+
+### Cleaning up
+
+```bash
+make clean
+```
+This will remove the `./bin` and `./release` directories.
