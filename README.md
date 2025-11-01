@@ -38,18 +38,12 @@ The tool is configured using a `config.yaml` file. Here is an example:
 
 ```yaml
 endpoints:
-  - name: openai
-    endpoint_url: "https://api.openai.com/v1"
-    api_key_env: "OPENAI_API_KEY"
-    model: "gpt-4"
-    context_window_size: 8192
-    chunk_size: 4096
-  - name: local_mistral
-    endpoint_url: "http://localhost:11434/v1"
-    api_key_env: "LOCAL_API_KEY"
-    model: "mistral"
-    context_window_size: 4096
-    chunk_size: 2048
+  - name: local_gpt
+    endpoint_url: "http://localhost:1234/v1/chat/completions"
+    api_key_env: ""
+    model: "openai/gpt-oss-20b"
+    context_window_size: 131072
+    chunk_size: 1000
 ```
 
 - `name`: A unique name for the endpoint configuration.
