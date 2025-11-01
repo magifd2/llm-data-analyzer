@@ -53,7 +53,24 @@ var rootCmd = &cobra.Command{
 
 It breaks down the input file into smaller chunks that fit within the context window of a specified Large Language Model (LLM).
 Each chunk is analyzed individually, and the results are then summarized to produce a final, consolidated report.`,
-	Args: cobra.ExactArgs(1), // Expect exactly one argument
+	Args: cobra.ExactArgs(1),
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Skip flag validation for version, help, and completion commands
+		if cmd.Name() == "version" || cmd.Name() == "help" || cmd.Name() == "completion" {
+			return nil
+		}
+
+		if analysisPromptFile == "" {
+			return fmt.Errorf("required flag \"analysis-prompt-file\" not set")
+		}
+		if summaryPromptFile == "" {
+			return fmt.Errorf("required flag \"summary-prompt-file\" not set")
+		}
+		if endpointName == "" {
+			return fmt.Errorf("required flag \"endpoint-name\" not set")
+		}
+		return nil
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Load config here
 		var err error
@@ -120,9 +137,12 @@ Each chunk is analyzed individually, and the results are then summarized to prod
 		}
 
 		// 6. Create LLM client
-		apiKey := os.Getenv(endpointConf.APIKeyEnv)
-		if apiKey == "" {
-			return fmt.Errorf("API key environment variable '%s' not set", endpointConf.APIKeyEnv)
+		apiKey := ""
+		if endpointConf.APIKeyEnv != "" {
+			apiKey = os.Getenv(endpointConf.APIKeyEnv)
+			if apiKey == "" {
+				return fmt.Errorf("API key environment variable '%s' not set", endpointConf.APIKeyEnv)
+			}
 		}
 		client := llm.NewClient(endpointConf.EndpointURL, apiKey, endpointConf.Model)
 
@@ -142,7 +162,7 @@ Each chunk is analyzed individually, and the results are then summarized to prod
 			go func(chunkIndex int, chunkText string) {
 				defer wg.Done()
 
-				fullPrompt := fmt.Sprintf("%s\n\n---\n%s", analysisPrompt, chunkText)
+				fullPrompt := fmt.Sprintf("%s\n\n--- Data ---\n%s", analysisPrompt, chunkText)
 				if verbose {
 					cmd.Printf("Analyzing chunk %d...\n", chunkIndex+1)
 				}
@@ -252,9 +272,4 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&keepTempDir, "keep-temp-dir", false, "Keep the temporary directory after execution")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 	rootCmd.PersistentFlags().BoolVar(&isJSONL, "jsonl", false, "Treat the input file as JSONL")
-
-	// Mark required flags
-	rootCmd.MarkPersistentFlagRequired("analysis-prompt-file")
-	rootCmd.MarkPersistentFlagRequired("summary-prompt-file")
-	rootCmd.MarkPersistentFlagRequired("endpoint-name")
 }
